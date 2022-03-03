@@ -1,0 +1,17 @@
+{
+  "sign-in": "Sign in",
+  "sign-up": "Sign up",
+  "description": "Review business & products and promote your business in your area",
+  "forgot-password": "Forgot password?",
+  "dont-have-account": "Don't you have an account?",
+  "username": "Username",
+  "firstname": "First name",
+  "lastname": "Last name",
+  "email": "Email",
+  "password": "Password",
+  "date-of-birth": "Date of birth",
+  "day": "Day",
+  "month": "Month",
+  "year": "Year",
+  "have-account": "Do you already have account?"
+}
