@@ -13,50 +13,62 @@ const LIMIT = 12; // Max keys permitted by ms translator api via rapide api
 const Home: NextPage = () => {
   const [json, setJson] = useState("");
   const [jsonTranslated, setJsonTranslated] = useState("");
+  const [inputLng, setInputLng] = useState<null | {
+    value: string;
+    key: string;
+  }>(null);
+  const [targetLng, setTargetLng] = useState<null | {
+    value: string;
+    key: string;
+  }>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState("");
 
   // according to ms trnslate free tier can translate ac chunk LIMIT items only
-  const translateChunk = async (chunk: string[]) => {
-    if (chunk.length > LIMIT) {
-      throw Error(`Can not pass ${LIMIT} item`);
-    }
-
-    // Rapid api request config
-    const options = {
-      params: {
-        to: "ar",
-        from: "en",
-        "api-version": "3.0",
-        profanityAction: "NoAction",
-        textType: "plain",
-      },
-      headers: {
-        "content-type": "application/json",
-        "x-rapidapi-host": "microsoft-translator-text.p.rapidapi.com",
-        "x-rapidapi-key": process.env.NEXT_PUBLIC_API_KEY!,
-      },
-    };
-
-    // Formatting the chunk to an apprropriate object according to ms api [{Text:string}]
-    const data = chunk.map((item) => {
-      return {
-        Text: item,
-      };
-    });
-
-    const res = await axios.post(
-      "https://microsoft-translator-text.p.rapidapi.com/translate",
-      data,
-      options
-    );
-
-    // returning array with translated strings
-    return res.data.map(
-      (oneTranslate: { translations: [{ text: string; to: string }] }) => {
-        return oneTranslate.translations[0].text;
+  const translateChunk = useCallback(
+    async (chunk: string[]) => {
+      if (chunk.length > LIMIT) {
+        throw Error(`Can not pass ${LIMIT} item`);
       }
-    );
-  };
+
+      // Rapid api request config
+      const options = {
+        params: {
+          from: inputLng?.key,
+          to: targetLng?.key,
+          "api-version": "3.0",
+          profanityAction: "NoAction",
+          textType: "plain",
+        },
+        headers: {
+          "content-type": "application/json",
+          "x-rapidapi-host": "microsoft-translator-text.p.rapidapi.com",
+          "x-rapidapi-key": process.env.NEXT_PUBLIC_API_KEY!,
+        },
+      };
+
+      // Formatting the chunk to an apprropriate object according to ms api [{Text:string}]
+      const data = chunk.map((item) => {
+        return {
+          Text: item,
+        };
+      });
+
+      const res = await axios.post(
+        "https://microsoft-translator-text.p.rapidapi.com/translate",
+        data,
+        options
+      );
+
+      // returning array with translated strings
+      return res.data.map(
+        (oneTranslate: { translations: [{ text: string; to: string }] }) => {
+          return oneTranslate.translations[0].text;
+        }
+      );
+    },
+    [inputLng?.key, targetLng?.key]
+  );
 
   // create appropriate json format to display
   const fillData = (data: object) => {
@@ -74,44 +86,51 @@ const Home: NextPage = () => {
    * @param {object} targetObject The text value to trnaslate
    * @param {function} callback Take the data:sring[] translated as an arguemnt
    */
-  const main = useCallback(async (targetObject, callback) => {
-    try {
-      const parsedTarget = JSON.parse(targetObject);
-      let result: any = {}; // to collect translated
-      const values: string[] = Object.values(parsedTarget);
+  const main = useCallback(
+    async (targetObject, callback) => {
+      try {
+        setLoading(true);
+        setJsonTranslated("");
+        const parsedTarget = JSON.parse(targetObject);
+        let result: any = {}; // to collect translated
+        const values: string[] = Object.values(parsedTarget);
 
-      let allChunksValues = []; // all translated data pushed to this array
+        let allChunksValues = []; // all translated data pushed to this array
 
-      if (values.length > LIMIT) {
-        let currentChunkIndex = 0;
-        let allChunksCount = Math.ceil(values.length / LIMIT);
+        if (values.length > LIMIT) {
+          let currentChunkIndex = 0;
+          let allChunksCount = Math.ceil(values.length / LIMIT);
 
-        while (currentChunkIndex <= allChunksCount - 1) {
-          let start = currentChunkIndex * LIMIT;
-          let end = start + LIMIT;
+          while (currentChunkIndex <= allChunksCount - 1) {
+            let start = currentChunkIndex * LIMIT;
+            let end = start + LIMIT;
 
-          const chunk = values.slice(start, end);
+            const chunk = values.slice(start, end);
 
-          const translatedChunk = await translateChunk(chunk);
-          allChunksValues.push(...translatedChunk);
+            const translatedChunk = await translateChunk(chunk);
+            allChunksValues.push(...translatedChunk);
 
-          currentChunkIndex++;
+            currentChunkIndex++;
+          }
+
+          // filling data,  api returned data as the order they were sent!
+          let fillingIndex = 0;
+          for (const property in parsedTarget) {
+            result[property] = allChunksValues[fillingIndex];
+            fillingIndex++;
+          }
+
+          callback(result);
         }
-
-        // filling data,  api returned data as the order they were sent!
-        let fillingIndex = 0;
-        for (const property in parsedTarget) {
-          result[property] = allChunksValues[fillingIndex];
-          fillingIndex++;
-        }
-
-        callback(result);
+      } catch (error: any) {
+        setErrors(error.name);
+        console.error(error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error: any) {
-      setErrors(error.name);
-      console.error(error);
-    }
-  }, []);
+    },
+    [translateChunk]
+  );
 
   return (
     <>
@@ -162,7 +181,7 @@ const Home: NextPage = () => {
                   { key: "ar", value: "Arabe" },
                   { key: "en", value: "English" },
                 ]}
-                callback={(e) => console.log(e)}
+                callback={(selectedLng) => setInputLng(selectedLng)}
               />
               <AppSelect
                 title="Select target language"
@@ -170,7 +189,7 @@ const Home: NextPage = () => {
                   { key: "ar", value: "Arabe" },
                   { key: "en", value: "English" },
                 ]}
-                callback={(e) => console.log(e)}
+                callback={(selectedLng) => setTargetLng(selectedLng)}
               />
             </div>
           </div>
@@ -179,22 +198,30 @@ const Home: NextPage = () => {
         <AppContainer className="bg-white p-5 mb-5">
           <h3 className="font-semibold text-slate-600">👉 3 - Translate!</h3>
           <div className="my-5">
-            <AppButton title="Translate" onPress={() => main(json, fillData)} />
+            <AppButton
+              disabled={!(targetLng && inputLng)}
+              title="Translate"
+              onPress={() => main(json, fillData)}
+            />
           </div>
         </AppContainer>
 
-        <div className="editor">
-          {jsonTranslated ? (
-            <JSONPretty
-              data={jsonTranslated}
-              theme={require("react-json-pretty/dist/monikai")}
-            />
-          ) : (
-            <>
-              <h4>Please input JSON.</h4>
-            </>
-          )}
-        </div>
+        <AppContainer className="bg-white p-5 mb-5">
+          <div className="editor">
+            {jsonTranslated ? (
+              <JSONPretty
+                data={jsonTranslated}
+                theme={require("react-json-pretty/dist/monikai")}
+              />
+            ) : (
+              <>
+                <h3 className="font-semibold text-slate-600">
+                  👉 Output will appear here after transalting
+                </h3>
+              </>
+            )}
+          </div>
+        </AppContainer>
       </main>
     </>
   );
