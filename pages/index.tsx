@@ -25,6 +25,7 @@ const Home: NextPage = () => {
   }>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState("");
+  const [apiKey, setApiKey] = useState("");
 
   // according to ms trnslate free tier can translate ac chunk LIMIT items only
   const translateChunk = useCallback(
@@ -45,7 +46,7 @@ const Home: NextPage = () => {
         headers: {
           "content-type": "application/json",
           "x-rapidapi-host": "microsoft-translator-text.p.rapidapi.com",
-          "x-rapidapi-key": process.env.NEXT_PUBLIC_API_KEY!,
+          "x-rapidapi-key": apiKey,
         },
       };
 
@@ -69,7 +70,7 @@ const Home: NextPage = () => {
         }
       );
     },
-    [inputLng?.key, targetLng?.key]
+    [apiKey, inputLng?.key, targetLng?.key]
   );
 
   // create appropriate json format to display
@@ -79,7 +80,11 @@ const Home: NextPage = () => {
       setJsonTranslated(stringData);
     } catch (error: any) {
       console.error(error);
-      setErrors(error.name);
+      setErrors(error.message);
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     }
   };
 
@@ -125,10 +130,19 @@ const Home: NextPage = () => {
           }
 
           callback(result);
+          window.scrollTo({
+            top: document.querySelector("body")?.scrollHeight,
+            behavior: "smooth",
+          });
         }
       } catch (error: any) {
-        setErrors(error.name);
+        setErrors(error.message);
         console.error(error);
+        console.log(error.message);
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
       } finally {
         setLoading(false);
       }
@@ -150,6 +164,32 @@ const Home: NextPage = () => {
             </h1>
           </AppContainer>
         </nav>
+        <AppContainer className="bg-green-100 p-5 mb-5">
+          <h3 className="font-semibold mb-3 text-slate-600">
+            👉 1 - x-rapidapi-key.
+          </h3>
+          <p>
+            Get a <span className="font-bold">x-rapidapi-key</span> (free),
+            <a
+              target="_blank"
+              className="font-bold text-green-800  hover:text-yellow-500"
+              href="https://rapidapi.com/"
+              rel="noreferrer"
+            >
+              here 🔗
+            </a>
+          </p>
+
+          <div className="mt-6">
+            <input
+              onChange={(e) => setApiKey(e.target.value)}
+              type="rapide api key"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              placeholder="Rapide api key"
+              required
+            />
+          </div>
+        </AppContainer>
         <AppContainer>
           <AppAlert text={errors} color="yellow" />
         </AppContainer>
@@ -200,7 +240,7 @@ const Home: NextPage = () => {
           <h3 className="font-semibold text-slate-600">👉 3 - Translate!</h3>
           <div className="my-5">
             <AppButton
-              disabled={!(targetLng && inputLng)}
+              disabled={!(targetLng && inputLng && apiKey)}
               title={loading ? "🔃 Fetching ..." : "Translate 🌐"}
               onPress={() => main(json, fillData)}
             />
