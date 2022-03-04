@@ -1,13 +1,13 @@
 ### JSON translator
 Link🔗: https://json-translator.vercel.app/
 
-        👉 The information you have entered will not be kept on this site.
+👉 The information you have entered will not be kept on this site.
           
-        👉 Translation is using Microsoft translator via rapide API free
-            tier (500,000 request per month) and handling of information
-            before translation is in accordance with Terms of MS Translator.
-        
-        👉 Depending on the content of the input, it may not work
+👉 Translation is using Microsoft translator via rapide API free
+    tier (500,000 request per month) and handling of information
+    before translation is in accordance with Terms of MS Translator.
+    
+👉 Depending on the content of the input, it may not work
             properly.
 
 ### Screenshot
