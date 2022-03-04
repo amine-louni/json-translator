@@ -7,6 +7,7 @@ import JSONPretty from "react-json-pretty";
 import { AppButton } from "../components/AppButton";
 import AppContainer from "../components/AppContainer";
 import AppSelect from "../components/AppSelect";
+import AppAlert from "../components/AppAlert";
 
 const LIMIT = 12; // Max keys permitted by ms translator api via rapide api
 
@@ -146,11 +147,14 @@ const Home: NextPage = () => {
             </h1>
           </AppContainer>
         </nav>
-
+        <AppContainer>
+          <AppAlert text={errors} />
+        </AppContainer>
         <AppContainer className="bg-white p-5 mb-5">
           <h3 className="font-semibold mb-3 text-slate-600">
             👉 1 - Please input JSON.
           </h3>
+
           <div className="editor">
             <Controlled
               options={{
