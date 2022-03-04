@@ -8,6 +8,7 @@ import { AppButton } from "../components/AppButton";
 import AppContainer from "../components/AppContainer";
 import AppSelect from "../components/AppSelect";
 import AppAlert from "../components/AppAlert";
+import allLanguages from "../data/languages";
 
 const LIMIT = 12; // Max keys permitted by ms translator api via rapide api
 
@@ -76,8 +77,9 @@ const Home: NextPage = () => {
     try {
       const stringData = JSON.stringify(data);
       setJsonTranslated(stringData);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      setErrors(error.name);
     }
   };
 
@@ -92,6 +94,7 @@ const Home: NextPage = () => {
       try {
         setLoading(true);
         setJsonTranslated("");
+        setErrors("");
         const parsedTarget = JSON.parse(targetObject);
         let result: any = {}; // to collect translated
         const values: string[] = Object.values(parsedTarget);
@@ -148,7 +151,7 @@ const Home: NextPage = () => {
           </AppContainer>
         </nav>
         <AppContainer>
-          <AppAlert text={errors} />
+          <AppAlert text={errors} color="yellow" />
         </AppContainer>
         <AppContainer className="bg-white p-5 mb-5">
           <h3 className="font-semibold mb-3 text-slate-600">
@@ -181,18 +184,12 @@ const Home: NextPage = () => {
             <div className="flex justify-between">
               <AppSelect
                 title="Select source language"
-                items={[
-                  { key: "ar", value: "Arabe" },
-                  { key: "en", value: "English" },
-                ]}
+                items={allLanguages}
                 callback={(selectedLng) => setInputLng(selectedLng)}
               />
               <AppSelect
                 title="Select target language"
-                items={[
-                  { key: "ar", value: "Arabe" },
-                  { key: "en", value: "English" },
-                ]}
+                items={allLanguages}
                 callback={(selectedLng) => setTargetLng(selectedLng)}
               />
             </div>
@@ -204,7 +201,7 @@ const Home: NextPage = () => {
           <div className="my-5">
             <AppButton
               disabled={!(targetLng && inputLng)}
-              title="Translate"
+              title={loading ? "🔃 Fetching ..." : "Translate 🌐"}
               onPress={() => main(json, fillData)}
             />
           </div>
@@ -225,6 +222,31 @@ const Home: NextPage = () => {
               </>
             )}
           </div>
+        </AppContainer>
+
+        <AppContainer>
+          <AppContainer>
+            <div
+              className="p-4 mb-4 text-sm text-gray-700 bg-gray-100 rounded-lg dark:bg-gray-700 dark:text-gray-300"
+              role="alert"
+            >
+              <h4 className="font-semibold text-lg mb-3">📝 Note</h4>
+              <p>
+                👉 The information you have entered will not be kept on this
+                site.
+              </p>
+              <p>
+                👉 Translation is using Microsoft translator Translate via
+                rapide API free tier (500,000 request per month) and handling of
+                information before translation is in accordance with Terms of MS
+                Translator.
+              </p>
+              <p>
+                👉 Depending on the content of the input, it may not work
+                properly.
+              </p>
+            </div>
+          </AppContainer>
         </AppContainer>
       </main>
     </>
