@@ -1,9 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+    Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
 a {
@@ -16,11 +20,9 @@ a {
 }
 
 .CodeMirror {
-  max-width: 550px;
-  max-height: 1500px;
-  min-height: 480px;
+  max-width: 100%;
+  min-height: 380px;
   width: 100%;
   height: 100%;
-  margin: auto;
   border-radius: 4px;
 }
