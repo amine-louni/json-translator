@@ -220,7 +220,7 @@ const Home: NextPage = () => {
             ) : (
               <>
                 <h3 className="font-semibold text-slate-600">
-                  👉 Output will appear here after transalting
+                  👉 4 - Output will appear here after transalting
                 </h3>
               </>
             )}
