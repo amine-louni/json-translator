@@ -9,6 +9,7 @@ import AppContainer from "../components/AppContainer";
 import AppSelect from "../components/AppSelect";
 import AppAlert from "../components/AppAlert";
 import allLanguages from "../data/languages";
+import Image from "next/image";
 
 const LIMIT = 12; // Max keys permitted by ms translator api via rapide api
 
@@ -155,15 +156,35 @@ const Home: NextPage = () => {
       <Head>
         <title>Json translator</title>
       </Head>
+      <nav className="bg-green-700 p-5">
+        <AppContainer>
+          <h1 className="text-white font-semibold  mb-0 text-xl">
+            🌐 Json translator online
+          </h1>
+        </AppContainer>
+      </nav>
+      <main className="bg-slate-100 p-5">
+        <AppContainer>
+          <div
+            className="p-4 mb-4 text-sm text-gray-700 bg-gray-100 rounded-lg dark:bg-gray-700 dark:text-gray-300"
+            role="alert"
+          >
+            <h4 className="font-semibold text-lg mb-3">📝 Note</h4>
+            <p>
+              👉 The information you have entered will not be kept on this site.
+            </p>
+            <p>
+              👉 Translation is using Microsoft translator via rapide API free
+              tier (500,000 request per month) and handling of information
+              before translation is in accordance with Terms of MS Translator.
+            </p>
+            <p>
+              👉 Depending on the content of the input, it may not work
+              properly.
+            </p>
+          </div>
+        </AppContainer>
 
-      <main className="bg-slate-100">
-        <nav className="bg-green-700 py-5 mb-5">
-          <AppContainer>
-            <h1 className="text-white font-semibold text-xl">
-              🌐 Json translator online
-            </h1>
-          </AppContainer>
-        </nav>
         <AppContainer className="bg-green-100 p-5 mb-5">
           <h3 className="font-semibold mb-3 text-slate-600">
             👉 1 - x-rapidapi-key.
@@ -190,12 +211,14 @@ const Home: NextPage = () => {
             />
           </div>
         </AppContainer>
+
         <AppContainer>
           <AppAlert text={errors} color="yellow" />
         </AppContainer>
+
         <AppContainer className="bg-white p-5 mb-5">
           <h3 className="font-semibold mb-3 text-slate-600">
-            👉 1 - Please input JSON.
+            👉 2 - Please input JSON.
           </h3>
 
           <div className="editor">
@@ -219,7 +242,7 @@ const Home: NextPage = () => {
         <AppContainer className="bg-white p-5 mb-5">
           <div className="my-5">
             <h3 className="font-semibold mb-5 text-slate-600">
-              👉 2 - Select source and target languages to translate.
+              👉 3 - Select source and target languages to translate.
             </h3>
             <div className="flex justify-between">
               <AppSelect
@@ -237,7 +260,7 @@ const Home: NextPage = () => {
         </AppContainer>
 
         <AppContainer className="bg-white p-5 mb-5">
-          <h3 className="font-semibold text-slate-600">👉 3 - Translate!</h3>
+          <h3 className="font-semibold text-slate-600">👉 4 - Translate!</h3>
           <div className="my-5">
             <AppButton
               disabled={!(targetLng && inputLng && apiKey)}
@@ -247,7 +270,7 @@ const Home: NextPage = () => {
           </div>
         </AppContainer>
 
-        <AppContainer className="bg-white p-5 mb-5">
+        <AppContainer className="bg-white p-5 ">
           <div className="editor">
             {jsonTranslated ? (
               <JSONPretty
@@ -257,38 +280,32 @@ const Home: NextPage = () => {
             ) : (
               <>
                 <h3 className="font-semibold text-slate-600">
-                  👉 4 - Output will appear here after transalting
+                  👉 5 - Output will appear here after transalting
                 </h3>
               </>
             )}
           </div>
         </AppContainer>
-
-        <AppContainer>
-          <AppContainer>
-            <div
-              className="p-4 mb-4 text-sm text-gray-700 bg-gray-100 rounded-lg dark:bg-gray-700 dark:text-gray-300"
-              role="alert"
-            >
-              <h4 className="font-semibold text-lg mb-3">📝 Note</h4>
-              <p>
-                👉 The information you have entered will not be kept on this
-                site.
-              </p>
-              <p>
-                👉 Translation is using Microsoft translator Translate via
-                rapide API free tier (500,000 request per month) and handling of
-                information before translation is in accordance with Terms of MS
-                Translator.
-              </p>
-              <p>
-                👉 Depending on the content of the input, it may not work
-                properly.
-              </p>
-            </div>
-          </AppContainer>
-        </AppContainer>
       </main>
+      <footer className="py-4 font-mono  bg-slate-700  text-slate-300">
+        <AppContainer>
+          <a
+            className="mr-10"
+            href="https://github.com/amine-louni/json-translator"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Github repo 🐱
+          </a>
+          <a
+            href="https://twitter.com/amin_louni"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Twitter account 🐤
+          </a>
+        </AppContainer>
+      </footer>
     </>
   );
 };
