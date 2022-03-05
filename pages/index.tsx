@@ -10,6 +10,7 @@ import AppSelect from "../components/AppSelect";
 import AppAlert from "../components/AppAlert";
 import allLanguages from "../data/languages";
 import Image from "next/image";
+import { isNestedObject } from "../utils";
 
 const LIMIT = 12; // Max keys permitted by ms translator api via rapide api
 
@@ -102,44 +103,54 @@ const Home: NextPage = () => {
         setJsonTranslated("");
         setErrors("");
         const parsedTarget = JSON.parse(targetObject);
+
+        // check if valid target
+        // Check if the object is nested
+        if (!parsedTarget && isNestedObject(parsedTarget)) {
+          console.error(
+            "Provide flat json file, this fn does't support nested objects"
+          );
+          throw Error(
+            "Provide flat json file, this fn does't support nested objects "
+          );
+        }
+
         let result: any = {}; // to collect translated
         const values: string[] = Object.values(parsedTarget);
 
         let allChunksValues = []; // all translated data pushed to this array
 
-        if (values.length > LIMIT) {
-          let currentChunkIndex = 0;
-          let allChunksCount = Math.ceil(values.length / LIMIT);
+        let currentChunkIndex = 0;
+        let allChunksCount = Math.ceil(values.length / LIMIT);
 
-          while (currentChunkIndex <= allChunksCount - 1) {
-            let start = currentChunkIndex * LIMIT;
-            let end = start + LIMIT;
+        while (currentChunkIndex <= allChunksCount - 1) {
+          let start = currentChunkIndex * LIMIT;
+          let end = start + LIMIT;
 
-            const chunk = values.slice(start, end);
+          const chunk = values.slice(start, end);
 
-            const translatedChunk = await translateChunk(chunk);
-            allChunksValues.push(...translatedChunk);
+          const translatedChunk = await translateChunk(chunk);
+          allChunksValues.push(...translatedChunk);
 
-            currentChunkIndex++;
-          }
-
-          // filling data,  api returned data as the order they were sent!
-          let fillingIndex = 0;
-          for (const property in parsedTarget) {
-            result[property] = allChunksValues[fillingIndex];
-            fillingIndex++;
-          }
-
-          callback(result);
-          window.scrollTo({
-            top: document.querySelector("body")?.scrollHeight,
-            behavior: "smooth",
-          });
+          currentChunkIndex++;
         }
+
+        // filling data,  api returned data as the order they were sent!
+        let fillingIndex = 0;
+        for (const property in parsedTarget) {
+          result[property] = allChunksValues[fillingIndex];
+          fillingIndex++;
+        }
+
+        callback(result);
+        window.scrollTo({
+          top: document.querySelector("body")?.scrollHeight,
+          behavior: "smooth",
+        });
       } catch (error: any) {
         setErrors(error.message);
         console.error(error);
-        console.log(error.message);
+
         window.scrollTo({
           top: 0,
           behavior: "smooth",
