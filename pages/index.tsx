@@ -9,7 +9,6 @@ import AppContainer from "../components/AppContainer";
 import AppSelect from "../components/AppSelect";
 import AppAlert from "../components/AppAlert";
 import allLanguages from "../data/languages";
-import Image from "next/image";
 import { isNestedObject } from "../utils";
 
 const LIMIT = 12; // Max keys permitted by ms translator api via rapide api
@@ -106,7 +105,7 @@ const Home: NextPage = () => {
 
         // check if valid target
         // Check if the object is nested
-        if (!parsedTarget && isNestedObject(parsedTarget)) {
+        if (!parsedTarget || isNestedObject(parsedTarget)) {
           console.error(
             "Provide flat json file, this fn does't support nested objects"
           );
@@ -200,6 +199,9 @@ const Home: NextPage = () => {
           <h3 className="font-semibold mb-3 text-slate-600">
             👉 1 - x-rapidapi-key.
           </h3>
+          <p className="mb-5 text-slate-500 text-sm">
+            🔴 Rapid api key is required
+          </p>
           <p>
             Get a <span className="font-bold">x-rapidapi-key</span> (free),
             <a
@@ -224,13 +226,16 @@ const Home: NextPage = () => {
         </AppContainer>
 
         <AppContainer>
-          <AppAlert text={errors} color="yellow" />
+          <AppAlert text={errors} />
         </AppContainer>
 
         <AppContainer className="bg-white p-5 mb-5">
-          <h3 className="font-semibold mb-3 text-slate-600">
-            👉 2 - Please input JSON.
+          <h3 className="font-semibold mb-1 text-slate-600">
+            👉 2 - Please input valid flat JSON.
           </h3>
+          <p className="mb-5 text-slate-500 text-sm">
+            🔴 Nested objects are not supported yet
+          </p>
 
           <div className="editor">
             <Controlled
@@ -252,9 +257,12 @@ const Home: NextPage = () => {
 
         <AppContainer className="bg-white p-5 mb-5">
           <div className="my-5">
-            <h3 className="font-semibold mb-5 text-slate-600">
+            <h3 className="font-semibold mb-3 text-slate-600">
               👉 3 - Select source and target languages to translate.
             </h3>
+            <p className="mb-5 text-slate-500 text-sm">
+              🔴 Feel free to contribute and add languages needed
+            </p>
             <div className="flex justify-between">
               <AppSelect
                 title="Select source language"
